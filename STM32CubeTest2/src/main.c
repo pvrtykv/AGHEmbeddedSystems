@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include <stdbool.h>
+#include <stdint.h>
 #define MAX 100
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -45,16 +46,20 @@ static void Error_Handler(void);
   * @retval None
   */
 typedef struct {
-	int significant;
-	int exponent;
+	int32_t significant;
+	int32_t exponent;
 } ExponentialNumber;
 
 ExponentialNumber to_exponential_number(char *number){
 	ExponentialNumber result = {};
 	bool counting = false;
+	bool negative = false;
 	while (*number != '\0') {
 		char current = *number;
-		if (current == '.') {
+		if (current == '-'){
+			negative = true;
+		}
+		else if (current == '.') {
 			counting = true;   //zliczamy liczby po kropce
 		}
 		else {
@@ -65,6 +70,9 @@ ExponentialNumber to_exponential_number(char *number){
 		}
 
 		number++;
+	}
+	if (negative){
+		result.significant *= -1;
 	}
 	return result;
 }
@@ -166,8 +174,8 @@ int main(void)
   /* Add your application code here
      */
 
-  char floatnumber1[] = "1.23";
-  char floatnumber2[] = "1.1";
+  char floatnumber1[] = "-0.000745";
+  char floatnumber2[] = "13.9732";
   ExponentialNumber number1 = to_exponential_number(floatnumber1);
   ExponentialNumber number2 = to_exponential_number(floatnumber2);
   trace_printf( "%s = %de%d   %s = %de%d\n", floatnumber1, number1.significant, number1.exponent, floatnumber2, number2.significant,
